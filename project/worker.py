@@ -7,7 +7,7 @@ import sentry_sdk
 
 from sentry_sdk.integrations.celery import CeleryIntegration
 import os
-from celery.signals import celeryd_init
+from celery.signals import celeryd_init, worker_init
 
 
 celery = Celery(__name__)
@@ -17,7 +17,7 @@ celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND")
 print("print works in worker.py")
 
 
-@signals.celeryd_init.connect
+@signals.worker_init.connect
 def init_sentry(**_kwargs):
 
     SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
