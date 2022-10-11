@@ -7,6 +7,7 @@ import sentry_sdk
 
 from sentry_sdk.integrations.celery import CeleryIntegration
 import os
+from celery.signals import celeryd_init
 
 
 celery = Celery(__name__)
