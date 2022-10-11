@@ -17,5 +17,6 @@ def create_task(task_type):
 
 @celery.task(name="error_task")
 def error_task(task_type):
+    time.sleep(int(task_type) * 10)
     1/0
     return True
