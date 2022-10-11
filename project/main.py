@@ -14,7 +14,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
-SENTRY_DSN = os.environ.get("CELERY_BROKER_URL", None)
+SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
 
 
 if SENTRY_DSN:
@@ -30,7 +30,9 @@ if SENTRY_DSN:
         traces_sample_rate=1.0,
     )
 
-    sentry_sdk.set_context("service", {"slug": "celery-test"})
+    sentry_sdk.set_context("service", {"slug": "celery-test", "worker": False})
+
+    print("Initialized Sentry in main!")
 
 
 @app.get("/")
