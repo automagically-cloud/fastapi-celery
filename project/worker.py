@@ -15,15 +15,15 @@ celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND")
 
 print("print works in worker.py")
 
-@signals.after_setup_logger
+@signals.after_setup_logger.connect()
 def after_setup_logger(**_kwargs):
     print("after_setup_logger")
 
-@signals.worker_init.connect
+@signals.worker_init.connect()
 def worker_init_test(**_kwargs):
     print("worker_init_test")
 
-@signals.worker_init.connect
+@signals.worker_init.connect()
 def init_sentry(**_kwargs):
     print("init_sentry")
 
