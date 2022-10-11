@@ -16,6 +16,8 @@ templates = Jinja2Templates(directory="templates")
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
 
+print("print works in main.py")
+
 
 if SENTRY_DSN:
 
@@ -28,6 +30,7 @@ if SENTRY_DSN:
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
         traces_sample_rate=1.0,
+        debug=True
     )
 
     sentry_sdk.set_context("service", {"slug": "celery-test", "worker": False})

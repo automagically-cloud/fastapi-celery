@@ -11,8 +11,10 @@ from celery.signals import celeryd_init
 
 
 celery = Celery(__name__)
-celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
-celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
+celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL")
+celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND")
+
+print("print works in worker.py")
 
 
 @signals.celeryd_init.connect
@@ -31,11 +33,15 @@ def init_sentry(**_kwargs):
             # of transactions for performance monitoring.
             # We recommend adjusting this value in production.
             traces_sample_rate=1.0,
+            debug=True
         )
 
         sentry_sdk.set_context("service", {"slug": "celery-test", "worker": True})
 
         print("Initialized Sentry in worker!")
+
+    else:
+        print("No SENTRY_DSN found!")
 
 
 @celeryd_init.connect(sender='worker12@example.com')
