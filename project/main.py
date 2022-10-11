@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from worker import create_task
+from worker import create_task, error_task
 
 
 app = FastAPI()
@@ -24,6 +24,11 @@ def run_task(payload = Body(...)):
     task = create_task.delay(int(task_type))
     return JSONResponse({"task_id": task.id})
 
+@app.post("/error_tasks", status_code=201)
+def run_task(payload = Body(...)):
+    task_type = payload["type"]
+    task = error_task.delay(int(task_type))
+    return JSONResponse({"task_id": task.id})
 
 @app.get("/tasks/{task_id}")
 def get_status(task_id):
