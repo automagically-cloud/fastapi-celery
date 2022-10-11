@@ -1,9 +1,9 @@
 aiofiles==0.6.0
 celery==5.2.7
-fastapi==0.64.0
+fastapi==0.85.0
 flower==1.2.0
 Jinja2==3.0.3
 pytest==6.2.4
-redis==3.5.3
-requests==2.25.1
-uvicorn==0.13.4
+redis==4.3.4
+requests==2.27.1
+uvicorn==0.18.3
