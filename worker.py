@@ -10,6 +10,8 @@ import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 import os
 from celery.signals import celeryd_init, worker_init, after_setup_logger
+from celery.utils.log import get_task_logger
+
 
 SERVICE_SLUG = "test"
 
@@ -18,7 +20,8 @@ celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL")
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND")
 
 
-print("print works in worker.py")
+logger = get_task_logger(__name__)
+
 
 @signals.after_setup_logger.connect()
 def after_setup_logger(**_kwargs):
@@ -58,27 +61,39 @@ def init_sentry(**_kwargs):
 
 @celery.task(name="create_task", queue=SERVICE_SLUG)
 def create_task(task_type):
+
+    logger.info(f"create_task run: {task_type}")
+
     time.sleep(int(task_type) * 10)
-    print("create_task run")
+
     return True
 
 
 @celery.task(name="error_task", queue=SERVICE_SLUG)
 def error_task(task_type):
+
+    logger.info(f"error_task run: {task_type}")
+
     time.sleep(int(task_type) * 10)
     1/0
+    
     return True
 
 
 @shared_task(name="create_shared_task", queue=SERVICE_SLUG)
 def create_shared_task(task_type):
+
+    logger.info(f"create_shared_task run: {task_type}")
+
     time.sleep(int(task_type) * 10)
-    print("create_shared_task run")
     return True
 
 
 @shared_task(bind=True, queue=SERVICE_SLUG, autoretry_for=(Exception,), retry_kwargs={'max_retries': 7, 'countdown': 5})
 def task_autoretry(self):
+
+    logger.info(self.request.id)
+
     if not random.choice([0, 1]):
         # mimic random error
         raise Exception()
@@ -88,6 +103,9 @@ def task_autoretry(self):
 
 @celery.task(bind=True, max_retries=5)
 def retrying(self):
+
+    logger.info(self.request.id)
+
     try:
         return 1/0
     except Exception:
@@ -96,5 +114,7 @@ def retrying(self):
 
 @celery.task(bind=True)
 def show_progress(self, n):
+    logger.info(self.request.id)
+
     for i in range(n):
         self.update_state(state='PROGRESS', meta={'current': i, 'total': n})
