@@ -1,8 +1,7 @@
 from celery.result import AsyncResult
-from fastapi import Body, FastAPI, Form, Request
+from fastapi import Body, FastAPI, Request
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+
 
 from worker import create_task, error_task
 import sentry_sdk
@@ -10,14 +9,9 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 import os
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
 
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
-
-print("print works in main.py")
-
 
 if SENTRY_DSN:
 
@@ -37,10 +31,6 @@ if SENTRY_DSN:
 
     print("Initialized Sentry in main!")
 
-
-@app.get("/")
-def home(request: Request):
-    return templates.TemplateResponse("home.html", context={"request": request})
 
 
 @app.post("/tasks", status_code=201)
