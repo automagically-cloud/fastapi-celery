@@ -6,7 +6,7 @@ set -o nounset
 
 celery -A worker.celery flower \
     --port=5555 \
-    --loglevel=${CELERY_FLOWER_LOGLEVEL:INFO} \
+    --loglevel=${CELERY_FLOWER_LOGLEVEL:"INFO"} \
     --natural_time \
     --debug=${CELERY_DEBUG:False} \
     --broker=$CELERY_BROKER_URL \
