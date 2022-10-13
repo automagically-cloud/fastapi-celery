@@ -78,7 +78,7 @@ def create_shared_task(task_type):
 
 
 @shared_task(bind=True, queue=SERVICE_SLUG, autoretry_for=(Exception,), retry_kwargs={'max_retries': 7, 'countdown': 5})
-def task_autoretry():
+def task_autoretry(task_type):
     if not random.choice([0, 1]):
         # mimic random error
         raise Exception()
