@@ -119,3 +119,5 @@ def show_progress(self, n):
     for i in range(n):
         time.sleep(3)
         self.update_state(state='PROGRESS', meta={'current': i, 'total': n})
+
+    return {'current': n, 'total': n}
