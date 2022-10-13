@@ -30,3 +30,13 @@ curl http://localhost:8004/tasks/<TASK_ID>
 
 <https://liftoffllc.medium.com/creating-a-truly-distributed-microservice-architecture-with-celery-and-docker-swarm-e178198e6838>
 <https://render.com/docs/deploy-celery>
+
+## Celery Knowledge base
+
+### `bind=True`
+
+<https://stackoverflow.com/questions/54899320/what-is-the-meaning-of-bind-true-keyword-in-celery>
+
+### Celery logging
+
+<https://docs.celeryq.dev/en/stable/internals/reference/celery.utils.log.html>

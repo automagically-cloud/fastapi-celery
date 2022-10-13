@@ -76,7 +76,7 @@ def error_task(task_type):
 
     time.sleep(int(task_type) * 10)
     1/0
-    
+
     return True
 
 
@@ -117,4 +117,5 @@ def show_progress(self, n):
     logger.info(self.request.id)
 
     for i in range(n):
+        time.sleep(3)
         self.update_state(state='PROGRESS', meta={'current': i, 'total': n})
