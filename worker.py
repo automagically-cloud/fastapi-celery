@@ -78,10 +78,23 @@ def create_shared_task(task_type):
 
 
 @shared_task(bind=True, queue=SERVICE_SLUG, autoretry_for=(Exception,), retry_kwargs={'max_retries': 7, 'countdown': 5})
-def task_autoretry(task_type):
+def task_autoretry(self):
     if not random.choice([0, 1]):
         # mimic random error
         raise Exception()
 
     print("task_autoretry run")
     return True
+
+@celery.task(bind=True, max_retries=5)
+def retrying(self):
+    try:
+        return 1/0
+    except Exception:
+        self.retry(countdown=5)
+
+
+@celery.task(bind=True)
+def show_progress(self, n):
+    for i in range(n):
+        self.update_state(state='PROGRESS', meta={'current': i, 'total': n})

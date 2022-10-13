@@ -3,7 +3,7 @@ from fastapi import Body, FastAPI
 from fastapi.responses import JSONResponse
 
 
-from worker import create_task, error_task, create_shared_task, task_autoretry
+from worker import create_task, error_task, create_shared_task, task_autoretry, retrying, show_progress
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
 import os
@@ -39,21 +39,31 @@ def run_create_task(payload = Body(...)):
     task = create_task.delay(int(task_type))
     return JSONResponse({"task_id": task.id})
 
-@app.post("/error_tasks", status_code=201)
+@app.post("/error", status_code=201)
 def run_error_task(payload = Body(...)):
     task_type = payload["type"]
     task = error_task.delay(int(task_type))
     return JSONResponse({"task_id": task.id})
 
-@app.post("/shared_tasks", status_code=201)
+@app.post("/shared_task", status_code=201)
 def run_create_shared_task(payload = Body(...)):
     task_type = payload["type"]
     task = create_shared_task.delay(int(task_type))
     return JSONResponse({"task_id": task.id})
 
-@app.post("/autoretry_tasks", status_code=201)
+@app.post("/autoretry", status_code=201)
 def run_task_autoretry():
-    task = task_autoretry.delay(1)
+    task = task_autoretry.delay()
+    return JSONResponse({"task_id": task.id})
+
+@app.post("/retrying", status_code=201)
+def run_task_retrying():
+    task = retrying.delay()
+    return JSONResponse({"task_id": task.id})
+
+@app.post("/show_progress/{n}", status_code=201)
+def run_task_show_progress(n: int):
+    task = show_progress.delay(n)
     return JSONResponse({"task_id": task.id})
 
 
