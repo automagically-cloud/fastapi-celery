@@ -10,10 +10,12 @@ import os
 
 app = FastAPI()
 
-
+SERVICE_SLUG = os.environ.get("SERVICE_SLUG", None)
 SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
 
 if SENTRY_DSN:
+
+    SENTRY_DEBUG = os.environ.get("SENTRY_DEBUG", False)
 
     sentry_sdk.init(
         dsn=SENTRY_DSN,
@@ -23,32 +25,26 @@ if SENTRY_DSN:
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
-        traces_sample_rate=1.0,
-        debug=True
+        traces_sample_rate=0.0,
+        debug=SENTRY_DEBUG
     )
 
-    sentry_sdk.set_context("service", {"slug": "celery-test", "worker": False})
-
-    print("Initialized Sentry in main!")
+    sentry_sdk.set_context("service", {"slug": SERVICE_SLUG})
 
 
-
-@app.post("/tasks", status_code=201)
-def run_create_task(payload = Body(...)):
-    task_type = payload["type"]
-    task = create_task.delay(int(task_type))
+@app.post("/tasks/{n}", status_code=201)
+def run_create_task(n: int):
+    task = create_task.delay(n)
     return JSONResponse({"task_id": task.id})
 
-@app.post("/error", status_code=201)
-def run_error_task(payload = Body(...)):
-    task_type = payload["type"]
-    task = error_task.delay(int(task_type))
+@app.post("/error/{n}", status_code=201)
+def run_error_task(n: int):
+    task = error_task.delay(n)
     return JSONResponse({"task_id": task.id})
 
-@app.post("/shared_task", status_code=201)
-def run_create_shared_task(payload = Body(...)):
-    task_type = payload["type"]
-    task = create_shared_task.delay(int(task_type))
+@app.post("/shared_task/{n}", status_code=201)
+def run_create_shared_task(n: int):
+    task = create_shared_task.delay(n)
     return JSONResponse({"task_id": task.id})
 
 @app.post("/autoretry", status_code=201)
@@ -73,6 +69,8 @@ def get_status(task_id):
     result = {
         "task_id": task_id,
         "task_status": task_result.status,
-        "task_result": task_result.result
+        "task_result": task_result.result,
+        "task_queue": task_result.queue
     }
+
     return JSONResponse(result)
