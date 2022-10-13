@@ -12,6 +12,9 @@ from celery.signals import celeryd_init, worker_init, after_setup_logger
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL")
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND")
+celery.conf.t
+
+
 
 print("print works in worker.py")
 
