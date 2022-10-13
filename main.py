@@ -52,9 +52,8 @@ def run_create_shared_task(payload = Body(...)):
     return JSONResponse({"task_id": task.id})
 
 @app.post("/autoretry_tasks", status_code=201)
-def run_task_autoretry(payload = Body(...)):
-    task_type = payload["type"]
-    task = task_autoretry.delay(int(task_type))
+def run_task_autoretry():
+    task = task_autoretry.delay()
     return JSONResponse({"task_id": task.id})
 
 
